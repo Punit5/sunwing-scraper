@@ -113,9 +113,14 @@
             color: white;
         }
         
-        .btn:hover {
+        .btn:hover, .btn:active {
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .btn {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .toggle-filters {
@@ -141,7 +146,7 @@
             font-size: 1.1rem;
         }
         
-        select {
+        select, input {
             padding: 12px 20px;
             border: 2px solid #dee2e6;
             border-radius: 8px;
@@ -150,12 +155,20 @@
             color: #495057;
             min-width: 200px;
             transition: all 0.3s ease;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
         
-        select:focus {
+        select:focus, input:focus {
             outline: none;
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        input {
+            min-width: 150px;
         }
         
         .loading {
@@ -237,9 +250,11 @@
             cursor: pointer;
             user-select: none;
             position: relative;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        th:hover {
+        th:hover, th:active {
             background: linear-gradient(135deg, #5a67d8 0%, #667eea 100%);
         }
         
@@ -292,9 +307,14 @@
             display: inline-block;
         }
         
-        .book-link:hover {
+        .book-link:hover, .book-link:active {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(79, 172, 254, 0.3);
+        }
+        
+        .book-link {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .error {
@@ -312,22 +332,170 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 10px;
+                margin: 0;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .controls {
+                padding: 20px 15px;
             }
             
             .form-group {
                 flex-direction: column;
                 gap: 15px;
+                align-items: stretch;
             }
             
-            select {
+            label {
+                font-size: 1rem;
+                text-align: center;
+            }
+            
+            select, input {
                 min-width: 100%;
+                padding: 14px 16px;
+                font-size: 1rem;
+                border-radius: 10px;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .filter-group {
+                gap: 8px;
+            }
+            
+            .filter-group label {
+                text-align: left;
+                font-size: 0.9rem;
+            }
+            
+            .filter-actions {
+                flex-direction: column;
+                gap: 15px;
+                margin-top: 20px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+            
+            .results {
+                padding: 15px;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .results-title {
+                font-size: 1.2rem;
+            }
+            
+            .results-count {
+                align-self: flex-end;
+            }
+            
+            .table-container {
+                margin: 0 -15px;
+                border-radius: 0;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                min-width: 800px;
             }
             
             th, td {
-                padding: 8px 6px;
+                padding: 12px 8px;
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+            
+            th {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+            
+            .price-cell {
                 font-size: 0.8rem;
+            }
+            
+            .book-link {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                border-radius: 4px;
+            }
+            
+            .loading {
+                padding: 30px 15px;
+            }
+            
+            .spinner {
+                width: 25px;
+                height: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .controls {
+                padding: 15px 10px;
+            }
+            
+            .results {
+                padding: 10px;
+            }
+            
+            .results-title {
+                font-size: 1.1rem;
+            }
+            
+            .table-container {
+                margin: 0 -10px;
+            }
+            
+            th, td {
+                padding: 10px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .book-link {
+                padding: 4px 8px;
+                font-size: 0.7rem;
             }
         }
     </style>
