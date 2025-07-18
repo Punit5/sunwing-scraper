@@ -13,6 +13,11 @@ A modern web application for browsing Sunwing vacation packages with advanced fi
 
 ## Quick Start
 
+### Web Application (Deployed on Vercel)
+Visit the live application: [https://sunwing-scraper.vercel.app](https://sunwing-scraper.vercel.app)
+
+### Local Development
+
 1. **Install Dependencies**:
    ```bash
    python -m venv myvenv
@@ -20,7 +25,7 @@ A modern web application for browsing Sunwing vacation packages with advanced fi
    pip install -r requirements.txt
    ```
 
-2. **Run Web Application**:
+2. **Run Web Application Locally**:
    ```bash
    ./myvenv/bin/python app.py
    ```
@@ -30,6 +35,15 @@ A modern web application for browsing Sunwing vacation packages with advanced fi
    ```bash
    ./run_sunwing_deals.sh
    ```
+
+### Deploy to Vercel
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
 
 ## Usage
 
