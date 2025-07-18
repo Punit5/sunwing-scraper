@@ -1,10 +1,10 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, jsonify
 import requests
 import datetime
 from typing import List, Dict, Any
 import os
 
-app = Flask(__name__, template_folder='..', static_folder='../static')
+app = Flask(__name__)
 
 def get_offers_for_gateway(data: Dict[str, Any], gateway_code: str) -> List[Dict[str, Any]]:
     """Extract offers for a specific gateway from the Sunwing API response."""
@@ -73,8 +73,19 @@ def format_offers_for_web(offers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 @app.route('/')
 def index():
-    """Render the main page."""
-    return render_template('index.html')
+    """Serve the main page."""
+    try:
+        # Try to read from current directory first, then parent
+        try:
+            with open('index.html', 'r') as f:
+                content = f.read()
+        except FileNotFoundError:
+            with open('../index.html', 'r') as f:
+                content = f.read()
+        
+        return content, 200, {'Content-Type': 'text/html'}
+    except Exception as e:
+        return f"Error loading page: {str(e)}", 500
 
 @app.route('/api/packages/<gateway>')
 def get_packages(gateway):
@@ -101,7 +112,3 @@ def get_packages(gateway):
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-# Vercel serverless function handler
-def handler(request):
-    return app(request.environ, lambda status, headers: None)

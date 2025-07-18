@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunwing Package Deals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .filters {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .filters.show {
+            display: block;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-filters {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-filters:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+        
+        select {
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            color: #495057;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: #6c757d;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            padding: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .results-title {
+            font-size: 1.4rem;
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .results-count {
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        
+        th:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #667eea 100%);
+        }
+        
+        th.sortable::after {
+            content: ' ↕';
+            opacity: 0.5;
+        }
+        
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+        
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+            transition: background-color 0.2s ease;
+        }
+        
+        .price-cell {
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .book-link {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .book-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 172, 254, 0.3);
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            select {
+                min-width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sunwing Package Deals</h1>
+            <p>Find the best all-inclusive vacation packages</p>
+        </div>
+        
+        <div class="controls">
+            <div class="form-group">
+                <label for="gateway">Select Departure City:</label>
+                <select id="gateway" onchange="loadPackages()">
+                    <option value="">Choose a city...</option>
+                    <option value="YVR">Vancouver (YVR)</option>
+                    <option value="YYZ">Toronto (YYZ)</option>
+                </select>
+            </div>
+            
+            <div class="filters" id="filters">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="destinationFilter">Destination:</label>
+                        <select id="destinationFilter" onchange="applyFilters()">
+                            <option value="">All Destinations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="countryFilter">Country:</label>
+                        <select id="countryFilter" onchange="applyFilters()">
+                            <option value="">All Countries</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="starFilter">Star Rating:</label>
+                        <select id="starFilter" onchange="applyFilters()">
+                            <option value="">All Ratings</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="durationFilter">Duration:</label>
+                        <select id="durationFilter" onchange="applyFilters()">
+                            <option value="">All Durations</option>
+                            <option value="7">7 Days</option>
+                            <option value="14">14 Days</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="minPrice">Min Price ($):</label>
+                        <input type="number" id="minPrice" placeholder="0" onchange="applyFilters()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="maxPrice">Max Price ($):</label>
+                        <input type="number" id="maxPrice" placeholder="10000" onchange="applyFilters()">
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="clearFilters()">Clear All</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Loading packages...
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="results" id="results" style="display: none;">
+            <div class="results-header">
+                <div class="results-title" id="resultsTitle"></div>
+                <div class="results-count" id="resultsCount"></div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="sortTable(0)">Hotel</th>
+                            <th class="sortable" onclick="sortTable(1)">Stars</th>
+                            <th class="sortable" onclick="sortTable(2)">Destination</th>
+                            <th class="sortable" onclick="sortTable(3)">Country</th>
+                            <th class="sortable" onclick="sortTable(4)">Departure</th>
+                            <th class="sortable" onclick="sortTable(5)">Duration</th>
+                            <th class="sortable" onclick="sortTable(6)">Meal Plan</th>
+                            <th class="sortable" onclick="sortTable(7)">Price</th>
+                            <th class="sortable" onclick="sortTable(8)">Save Up To</th>
+                            <th>Book</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packagesTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allPackages = [];
+        let filteredPackages = [];
+        let currentSort = { column: -1, direction: 'asc' };
+        
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').classList.remove('show');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            hideLoading();
+        }
+        
+        
+        function populateFilterOptions(packages) {
+            const destinations = [...new Set(packages.map(p => p.destination))].sort();
+            const countries = [...new Set(packages.map(p => p.country))].sort();
+            
+            const destinationFilter = document.getElementById('destinationFilter');
+            const countryFilter = document.getElementById('countryFilter');
+            
+            destinationFilter.innerHTML = '<option value="">All Destinations</option>';
+            countryFilter.innerHTML = '<option value="">All Countries</option>';
+            
+            destinations.forEach(dest => {
+                if (dest !== 'N/A') {
+                    destinationFilter.innerHTML += `<option value="${dest}">${dest}</option>`;
+                }
+            });
+            
+            countries.forEach(country => {
+                if (country !== 'N/A') {
+                    countryFilter.innerHTML += `<option value="${country}">${country}</option>`;
+                }
+            });
+        }
+        
+        function applyFilters() {
+            const destinationFilter = document.getElementById('destinationFilter').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            const starFilter = document.getElementById('starFilter').value;
+            const durationFilter = document.getElementById('durationFilter').value;
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+            
+            filteredPackages = allPackages.filter(pkg => {
+                const price = parseFloat(pkg.price) || 0;
+                const stars = parseFloat(pkg.stars) || 0;
+                const duration = parseInt(pkg.duration) || 0;
+                
+                return (!destinationFilter || pkg.destination === destinationFilter) &&
+                       (!countryFilter || pkg.country === countryFilter) &&
+                       (!starFilter || stars >= parseInt(starFilter)) &&
+                       (!durationFilter || duration === parseInt(durationFilter)) &&
+                       (price >= minPrice && price <= maxPrice);
+            });
+            
+            displayPackages(filteredPackages);
+            updateResultsCount();
+        }
+        
+        function clearFilters() {
+            document.getElementById('destinationFilter').value = '';
+            document.getElementById('countryFilter').value = '';
+            document.getElementById('starFilter').value = '';
+            document.getElementById('durationFilter').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            
+            filteredPackages = [...allPackages];
+            displayPackages(filteredPackages);
+            updateResultsCount();
+        }
+        
+        function sortTable(columnIndex) {
+            const headers = document.querySelectorAll('th');
+            
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+            
+            if (currentSort.column === columnIndex) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = columnIndex;
+                currentSort.direction = 'asc';
+            }
+            
+            headers[columnIndex].classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            
+            filteredPackages.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch(columnIndex) {
+                    case 0: aVal = a.hotel; bVal = b.hotel; break;
+                    case 1: aVal = parseFloat(a.stars) || 0; bVal = parseFloat(b.stars) || 0; break;
+                    case 2: aVal = a.destination; bVal = b.destination; break;
+                    case 3: aVal = a.country; bVal = b.country; break;
+                    case 4: aVal = new Date(a.departure_date); bVal = new Date(b.departure_date); break;
+                    case 5: aVal = parseInt(a.duration) || 0; bVal = parseInt(b.duration) || 0; break;
+                    case 6: aVal = a.meal_plan; bVal = b.meal_plan; break;
+                    case 7: aVal = parseFloat(a.price) || 0; bVal = parseFloat(b.price) || 0; break;
+                    case 8: aVal = parseFloat(a.save_upto) || 0; bVal = parseFloat(b.save_upto) || 0; break;
+                    default: return 0;
+                }
+                
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (aVal < bVal) return currentSort.direction === 'asc' ? -1 : 1;
+                if (aVal > bVal) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            displayPackages(filteredPackages);
+        }
+        
+        function displayPackages(packages) {
+            const tbody = document.getElementById('packagesTable');
+            tbody.innerHTML = '';
+            
+            packages.forEach(pkg => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${pkg.hotel}</td>
+                    <td>${pkg.stars}</td>
+                    <td>${pkg.destination}</td>
+                    <td>${pkg.country}</td>
+                    <td>${pkg.departure_date}</td>
+                    <td>${pkg.duration}</td>
+                    <td>${pkg.meal_plan}</td>
+                    <td class="price-cell">$${pkg.price} (Reg: $${pkg.reg_price}) ${pkg.tax}</td>
+                    <td>${pkg.save_upto}%</td>
+                    <td><a href="${pkg.deep_link}" target="_blank" class="book-link">Book</a></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateResultsCount() {
+            document.getElementById('resultsCount').textContent = `${filteredPackages.length} packages found`;
+        }
+        
+        function showResults(data) {
+            hideLoading();
+            document.getElementById('error').classList.remove('show');
+            
+            allPackages = data.packages;
+            filteredPackages = [...allPackages];
+            
+            document.getElementById('resultsTitle').textContent = `Packages from ${data.gateway_name}`;
+            
+            populateFilterOptions(allPackages);
+            displayPackages(filteredPackages);
+            updateResultsCount();
+            
+            // Show filters automatically when data is loaded
+            document.getElementById('filters').classList.add('show');
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        async function loadPackages() {
+            const gateway = document.getElementById('gateway').value;
+            
+            if (!gateway) {
+                document.getElementById('results').style.display = 'none';
+                document.getElementById('filters').classList.remove('show');
+                return;
+            }
+            
+            // Clear all filters when switching cities
+            clearFilters();
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`/api/packages/${gateway}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch packages');
+                }
+                
+                showResults(data);
+            } catch (error) {
+                showError(`Error loading packages: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
